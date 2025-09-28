@@ -38,10 +38,7 @@ public class Intake {
     public IntakeState getCurrentState() {
         return intakeState;
     }
-    public IntakeState setState(IntakeState intakeState){
-        this.intakeState = intakeState;
-        return intakeState;
-    }
+
     public void periodic() {
             // The state machine logic lives in this method
             switch (intakeState) {
@@ -55,6 +52,11 @@ public class Intake {
 
                     if (current > currentThreshold) {
                         intakeMotor.setPower(0.5);
+                        if(colorSensor.red() > colorSensor.green() && colorSensor.red() < colorSensor.blue()){
+                            setState(IntakeState.DETECTED);
+                        } else{
+                            intakeMotor.setPower(0.5);
+                        }
                     }
                     break;
                 case DETECTED:
@@ -81,6 +83,10 @@ public class Intake {
         public void eject() {
             intakeState = IntakeState.EJECTING;
         }
+    public IntakeState setState(IntakeState intakeState){
+        this.intakeState = intakeState;
+        return intakeState;
+    }
 
     }
 
