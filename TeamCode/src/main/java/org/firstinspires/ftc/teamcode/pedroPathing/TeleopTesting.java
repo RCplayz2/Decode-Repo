@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.drivetrains.Mecanum;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
@@ -27,37 +25,22 @@ import java.util.List;
 @TeleOp(name="TeleOp Testing")
 public class TeleopTesting extends OpMode {
     AllMechs robot;
-//    Follower follower;
+
     Gamepad currentGamepad1;
     Gamepad previousGamepad1;
 
-    private final Pose startPose = new Pose(0, 0, 0);
-
-    boolean horToggle = false;
-    public static final double clawOpen = 0;
-    public static final double clawClose = 1;
-
 
     private final FtcDashboard dash = FtcDashboard.getInstance();
-
-    @Override
+   @Override
     public void init() {
         // Step 1: Initialize the robot, which maps the physical motors.
         robot = new AllMechs(hardwareMap, gamepad1, gamepad2);
 
-//        follower = Constants.createFollower(hardwareMap);
-//
-//        follower.setStartingPose(startPose);
-//        follower.update();
         previousGamepad1 = new Gamepad();
         currentGamepad1 = new Gamepad();
 
     }
 
-//    @Override
-//    public void start() {
-//        follower.startTeleopDrive();
-//    }
 
     @Override
     public void loop() {
@@ -78,57 +61,57 @@ public class TeleopTesting extends OpMode {
         robot.leftBack.setPower(backLeftPower);
         robot.rightFront.setPower(frontRightPower);
         robot.rightBack.setPower(backRightPower);
-//        TelemetryPacket packet = new TelemetryPacket();
-//        double axial = .484038 * Math.tan(1.12 * -gamepad1.left_stick_y);
-//        double lateral = .484038 * Math.tan(1.12 * -gamepad1.left_stick_x);
-//        double rotational = -gamepad1.right_stick_x;
-//
-//        follower.setTeleOpDrive(axial, lateral, rotational, true);
-//
-//        follower.update();
-//
-//        Pose currentPose = follower.getPose();
-////
-//        if (currentPose != null) {
-////            // Dashboard field overlay (uncomment this if you want to use the overlay)
-////            // Canvas fieldOverlay = packet.fieldOverlay();
-////            //
-////            // double currentX = currentPose.getX();
-////            // double currentY = currentPose.getY();
-////            // double currentHeading = currentPose.getHeading();
-////            //
-////            // fieldOverlay.setStroke("red");
-////            // fieldOverlay.strokeCircle(currentX, currentY, 9);
-////            // fieldOverlay.strokeLine(currentX, currentY,
-////            //         currentX + 9 * Math.cos(currentHeading),
-////            //         currentY + 9 * Math.sin(currentHeading));
-//        } else {
-////            // Add a friendly message to the telemetry if the pose hasn't been initialized yet
-//            telemetry.addLine("Waiting for Follower to initialize Pose...");
-//        }
+
+
         previousGamepad1.copy(currentGamepad1);
         currentGamepad1.copy(gamepad1);
 
-        if (gamepad1.a) {
+        if (gamepad1.cross) {
             CommandManager.INSTANCE.scheduleCommand(
-                    robot.setFullPower()
+                    robot.transfer()
             );
         }
-        if(gamepad1.b){
+        if(gamepad1.circle){
             CommandManager.INSTANCE.scheduleCommand(
-                    robot.turnOff()
+                    robot.turnOffFlywheel()
             );
         }
-        if(gamepad1.x){
+        if(gamepad1.square){
             CommandManager.INSTANCE.scheduleCommand(
-                    robot.intakeOn()
+                    robot.pushTransfer()
             );
         }
-        if(gamepad1.y){
+        if(gamepad1.triangle){
             CommandManager.INSTANCE.scheduleCommand(
                     robot.intakeOff()
             );
         }
+        if(gamepad1.dpad_down){
+            CommandManager.INSTANCE.scheduleCommand(
+                    robot.setLow()
+            );
+        }
+        if(gamepad1.dpad_up){
+            CommandManager.INSTANCE.scheduleCommand(
+                    robot.setHigh()
+            );
+        }
+        if(gamepad1.dpad_left){
+            CommandManager.INSTANCE.scheduleCommand(
+                    robot.resetAll()
+            );
+        }
+        if(gamepad2.circle){
+            CommandManager.INSTANCE.scheduleCommand(
+                    robot.setLow()
+            );
+        }
+        if(gamepad2.square){
+            CommandManager.INSTANCE.scheduleCommand(
+                    robot.setMiddle()
+            );
+        }
+
 
 
 //        if (currentGamepad1.cross && !previousGamepad1.cross) {
@@ -154,9 +137,7 @@ public class TeleopTesting extends OpMode {
 
         CommandManager.INSTANCE.run();
 
-//        packet.addLine("Current Robot Pose: " + follower.getPose().toString());
-//        packet.addLine("Running Commands: " + CommandManager.INSTANCE.getRunningCommands().size());
-//        dash.sendTelemetryPacket(packet);
+
 
     }
 }

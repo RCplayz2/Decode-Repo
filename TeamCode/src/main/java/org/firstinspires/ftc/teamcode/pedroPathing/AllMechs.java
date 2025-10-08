@@ -5,6 +5,7 @@ import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFController;
 import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -28,13 +29,21 @@ import com.rowanmcalpin.nextftc.core.command.utility.delays.Delay;
 import com.rowanmcalpin.nextftc.core.units.TimeSpan;
 import com.rowanmcalpin.nextftc.ftc.hardware.controllables.RunToPosition;
 
+import kotlin.time.Instant;
+
 public class AllMechs {
+
 
     public DcMotor leftFront, leftBack, rightFront, rightBack, flyWheel, intake;
 
     public MultipleTelemetry telemetry;
     public Gamepad gamepad1;
     public Gamepad gamepad2;
+    public Servo height;
+    public CRServo pushLeft, pushRight ;
+    public static double servo_high_pos = 1;
+    public static double servo_middle_pos = 0.6;
+    public static double servo_low_pos = 0.2;
 
 
     public AllMechs(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
@@ -49,6 +58,11 @@ public class AllMechs {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        height = hardwareMap.get(Servo.class, "height");
+        pushLeft = hardwareMap.get(CRServo.class, "pushLeft");
+        pushRight = hardwareMap.get(CRServo.class, "pushRight");
+
+
 
 
         this.gamepad1 = gamepad1;
@@ -59,18 +73,52 @@ public class AllMechs {
     }
 
 
-    public Command setFullPower(){
-        return new InstantCommand(()-> flyWheel.setPower(1));
-    }
-    public Command turnOff(){
+    public Command turnOffFlywheel(){
         return new InstantCommand(()-> flyWheel.setPower(0));
     }
     public Command intakeOn() {
-        return new InstantCommand(()-> intake.setPower(1));
+        return new ParallelGroup(
+                new InstantCommand(()-> intake.setPower(1))
+        );
     }
     public Command intakeOff(){
         return new InstantCommand(()-> intake.setPower(0));
     }
+    public Command transfer(){
+        return new SequentialGroup(
+                new InstantCommand(()-> height.setPosition(servo_middle_pos)),
+
+                new ParallelGroup(
+                        new InstantCommand(()-> height.setPosition(0.5)),
+                        new InstantCommand(()-> flyWheel.setPower(1))
+                )
+        );
+    }
+    public Command pushTransfer(){
+        return new ParallelGroup(
+                new InstantCommand(()-> pushRight.setPower(-1)),
+        new InstantCommand(()-> pushLeft.setPower(1))
+        );
+
+    }
+    public Command resetAll(){
+        return new ParallelGroup(
+                new InstantCommand(()-> pushLeft.setPower(0)),
+                new InstantCommand(()-> pushRight.setPower(0)),
+                new InstantCommand(()-> flyWheel.setPower(0)),
+                intakeOff()
+                );
+    }
+    public Command setLow(){
+        return new InstantCommand(()-> height.setPosition(servo_low_pos));
+    }
+    public Command setMiddle(){
+        return new InstantCommand(()-> height.setPosition(servo_middle_pos));
+    }
+    public Command setHigh(){
+        return new InstantCommand(()-> height.setPosition(servo_high_pos));
+    }
+
 //    public Command setVertTarget(int target) {
 //        return new InstantCommand(() -> vert_target = target);
 //    }
