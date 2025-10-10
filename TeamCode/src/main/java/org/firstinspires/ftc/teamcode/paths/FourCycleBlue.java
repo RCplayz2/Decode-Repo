@@ -29,7 +29,7 @@ public class FourCycleBlue {
     private Path scorePreload;
     public PathChain pickup1, score2, pickup2, score3, pickup3, score4, park;
 
-
+    //see if push in is needed
     public void buildPaths() {
 
         scorePreload = new Path(new BezierLine(startPose, score1Pose));

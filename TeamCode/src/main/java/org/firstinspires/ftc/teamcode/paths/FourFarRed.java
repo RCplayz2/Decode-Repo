@@ -14,7 +14,7 @@ public class FourFarRed {
     private Timer pathTimer, actionTimer, opmodeTimer;
 
     private int pathState;
-
+    //see if push in is needed
     private final Pose startPose = new Pose(87.9, 7.9, Math.toRadians(90));
     private final Pose score1Pose = new Pose(87.9, 12.4, Math.toRadians(72));
     private final Pose pickup1Pose = new Pose(126.5, 36.07, Math.toRadians(0));
