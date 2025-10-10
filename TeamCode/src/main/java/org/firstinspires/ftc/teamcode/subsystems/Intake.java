@@ -37,7 +37,7 @@ public class Intake {
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
         // Initialization
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
         colorSensor = hardwareMap.get(ColorSensor.class, "color sensor");
         this.telemetry = telemetry;
 
